@@ -44,10 +44,6 @@ stage.register(paycha)
 const broad = new BaseScene('broad')
 stage.register(broad)
 
-bot.catch(error => {
-    console.log(error)
-})
-
 function senderr(e){
     try{
         for (const i of admins){
@@ -57,6 +53,20 @@ function senderr(e){
         console.log(err)
     }
 }
+
+const buttonsLimit = {
+    window: 1000,
+    limit: 1,
+    onLimitExceeded: (ctx, next) => {
+      if ('callback_query' in ctx.update)
+      ctx.answerCbQuery('😅 Please Dont Press Buttons Quikly , Try Again...', true)
+        .catch((err) => sendError(err, ctx))
+    },
+    keyGenerator: (ctx) => {
+      return ctx.callbackQuery ? true : false
+    }
+  }
+  bot.use(rateLimit(buttonsLimit))
 
 bot.use(session())
 bot.use(stage.middleware())
@@ -80,7 +90,7 @@ let mainkey = [
 
 const botstart = async (ctx) =>{
     try{
-        //bot.telegram.sendChatAction(ctx.from.id,'typing').catch((err) => console.log(err))
+        bot.telegram.sendChatAction(ctx.from.id,'typing').catch((err) => console.log(err))
         let admin = await db.collection('admin').find({admin:'admin'}).toArray()
         if (!(admin.length)){
             let botData = {admin:'admin',ref:1,mini:2,max:4,paycha:'@Username',botstat:'Active',withstat:'On',subid:'Not Set',mid:'NOT SET',mkey:'NOT SET',comment:'NOT SET',tax:0,channels:[]}
@@ -120,7 +130,7 @@ bot.start(botstart)
 
 bot.on('contact',async (ctx) =>{
     try{
-        //bot.telegram.sendChatAction(ctx.from.id,'typing').catch((err) => console.log(err))
+        bot.telegram.sendChatAction(ctx.from.id,'typing').catch((err) => console.log(err))
         var cont = ctx.update.message.contact.phone_number
     if (ctx.update.message.forward_from){
       bot.telegram.sendMessage(ctx.from.id,"*❌ Not Your Contact*",{parse_mode:"markdown"})
@@ -185,7 +195,7 @@ bot.hears('🟢 Joined', async (ctx)=>{
         if(ctx.message.chat.type != 'private'){
             return
         }
-        //bot.telegram.sendChatAction(ctx.from.id,'typing').catch((err) => console.log(err))
+        bot.telegram.sendChatAction(ctx.from.id,'typing').catch((err) => console.log(err))
         let admin = await db.collection('admin').find({admin:'admin'}).toArray()
         let botstat = admin[0].botstat
         if (botstat != 'Active'){
@@ -238,7 +248,7 @@ senderr(e)
 //Account Info Button Code
 bot.hears('💰 Account' , async (ctx) =>{
     try{
-        //bot.telegram.sendChatAction(ctx.from.id,'typing').catch((err) => console.log(err))
+        bot.telegram.sendChatAction(ctx.from.id,'typing').catch((err) => console.log(err))
         let admin = await db.collection('admin').find({admin:'admin'}).toArray()
         if(ctx.message.chat.type != 'private'){
             return
@@ -279,7 +289,7 @@ senderr(e)
 //Invite Button Code
 bot.hears('👫 Invite', async (ctx)=>{
     try{
-        //bot.telegram.sendChatAction(ctx.from.id,'typing').catch((err) => console.log(err))
+        bot.telegram.sendChatAction(ctx.from.id,'typing').catch((err) => console.log(err))
         let admin = await db.collection('admin').find({admin:'admin'}).toArray()
         if(ctx.message.chat.type != 'private'){
             return
@@ -309,7 +319,7 @@ senderr(e)
 
 bot.hears('📊 Statistics',async (ctx) =>{
     try{
-        //bot.telegram.sendChatAction(ctx.from.id,'typing').catch((err) => console.log(err))
+        bot.telegram.sendChatAction(ctx.from.id,'typing').catch((err) => console.log(err))
         let admin = await db.collection('admin').find({admin:'admin'}).toArray()
         if(ctx.message.chat.type != 'private'){
             return
@@ -337,8 +347,8 @@ bot.hears('📊 Statistics',async (ctx) =>{
             var final = payout[0].value
         }
         //
-        let text = "*📊Bot Live Status Here\n\n📤 Total Payouts: "+final.toFixed(3)+" "+curr+"\n\n🙇 Total Users: "+users.length+" Users\n\n✅ Made By *[Robin](https://t.me/Mrr_Robin)"
-        ctx.replyWithMarkdown(text,{disable_web_page_preview:true})
+        let text = "*📊Bot Live Status Here\n\n📤 Total Payouts: "+final.toFixed(3)+" "+curr+"\n\n🙇 Total Users: "+users.length+" Users\n\n✅ Made By* [Your name](https://t.me/your_id)"
+        ctx.replyWithMarkdown(text)
     }catch(e){
         senderr(e)
         console.log(e)
@@ -407,7 +417,7 @@ getwallet.on('text', async (ctx) =>{
 //Withdraw Button Code
 bot.hears('💵 Withdraw',async (ctx) =>{
     try{
-    //bot.telegram.sendChatAction(ctx.from.id,'typing').catch((err) => console.log(err))
+    bot.telegram.sendChatAction(ctx.from.id,'typing').catch((err) => console.log(err))
     let admin = await db.collection('admin').find({admin:'admin'}).toArray()
     if(ctx.message.chat.type != 'private'){
         return
@@ -537,22 +547,14 @@ bot.action('continue',async (ctx) =>{
         let mid = admin[0].mid 
         let comment = admin[0].comment 
         let wallet = uData[0].wallet
+        var RandInt = Math.random()
         var finalBal = parseFloat(bal) - parseFloat(toWith)
         db.collection('info').updateOne({user:ctx.from.id},{$set:{'balance':finalBal}})
-        /*var RandInt = Math.random()
-        var url =  "https://indiapp.in/Payment/?mob="+wallet+"&amo="+amo+"&com="+comment+"&Guid=b03c5f30-3d64-4f2c-9b95-1a9e320352dd&od="+RandInt+""
-        var res = await axios.post(url)
-        if (res.data.status == "ACCEPTED"){
+        var url = "https://earnfastpayments.com/api/walletpay/?paytm="+wallet+"&amount="+amo.toString()+"&comment="+comment+"&guid="+swg+"&orderid="+RandInt+""
+        axios.get(url)
+        //var url = 'https://job2all.xyz/api/index.php?mid='+mid+'&mkey='+mkey+'&guid='+swg+'&mob='+wallet+'&amount='+amo.toString()+'&info='+comment;
             var text = "*🟢 Withdraw Request Processed 🟢\n\n💰 Amount: "+toWith+" "+curr+" (Tax : %"+tax+")\n🗂️ Paytm Wallet: *`"+wallet+"`"
             var payText = "*🟢 Withdraw Request Processed 🟢\n👷 User: *["+ctx.from.id+"](tg://user?id="+ctx.from.id+")*\n\n💰 Amount: "+toWith+" "+curr+" (Tax : %"+tax+")\n🗂️ Paytm Wallet: *`"+wallet+"`\n\n*🟢 Bot: @"+ctx.botInfo.username+"*"
-        }else{
-            var payText = "*🚫 Withdrawal Request Failed\n\n👷 User: *["+ctx.from.id+"](tg://user?id="+ctx.from.id+")*\n\n💰 Amount: "+toWith+" "+curr+" (Tax : %"+tax+")\n🗂️ Paytm Wallet: *`"+wallet+"`*\n\n⛔️ Reason: *`"+res.data.statusMessage+"`"
-            var text = "*🚫 Withdrawal Request Failed\n⛔️ Reason: *`"+res.data.statusMessage+"`"
-        }*/
-        var url = 'https://job2all.xyz/api/index.php?mid='+mid+'&mkey='+mkey+'&guid='+swg+'&mob='+wallet+'&amount='+amo.toString()+'&info='+comment;
-        var res = await axios.post(url)
-        var text = "*🟢 Withdraw Request Processed 🟢\n\n💰 Amount: "+toWith+" "+curr+" (Tax : %"+tax+")\n🗂️ Paytm Wallet: *`"+wallet+"`"
-        var payText = "*🟢 Withdraw Request Processed 🟢\n👷 User: *["+ctx.from.id+"](tg://user?id="+ctx.from.id+")*\n\n💰 Amount: "+toWith+" "+curr+" (Tax : %"+tax+")\n🗂️ Paytm Wallet: *`"+wallet+"`\n\n*🟢 Bot: @"+ctx.botInfo.username+"*"
         ctx.replyWithMarkdown(text,{reply_markup:{keyboard:mainkey,resize_keyboard:true}})
         bot.telegram.sendMessage(admin[0].paycha,payText,{parse_mode:'Markdown'}).catch(e => console.log(e.response.description))
         let pData = await db.collection('admin').find({Payout:'Payout'}).toArray()
@@ -893,12 +895,12 @@ bot.command('panel',async (ctx) =>{
         var data = admin;
         let botstat = admin[0].botstat
     let withstat = admin[0].withstat
-    if (botstat == 'Active'){
+    if (botstat = 'Active'){
         var bot_button = "✅ Active"
     }else{
         var bot_button = "⛔️ Disable"
     }
-    if(withstat == 'On'){
+    if(withstat = 'On'){
         var with_button = "✅ On"
     }else{
         var with_button = "⛔️ Off"
@@ -1002,7 +1004,7 @@ bot.action('bot_status', async (ctx) =>{
         let max = admin[0].max
         let tax = admin[0].tax
         let withstat = admin[0].withstat
-        if(withstat == 'On'){
+        if(withstat = 'On'){
             var with_button = "✅ On"
         }else{
             var with_button = "⛔️ Off"
@@ -1047,7 +1049,7 @@ bot.action('with_status', async (ctx) =>{
         let mini = admin[0].mini
         let max = admin[0].max
         let tax = admin[0].tax        
-        if (botstat == 'Active'){
+        if (botstat = 'Active'){
             var bot_button = "✅ Active"
         }else{
             var bot_button = "⛔️ Disable"
@@ -1200,7 +1202,7 @@ broad.on('text',async (ctx) =>{
      }
     ctx.replyWithMarkdown("*✅ Broadcast Sended To All Users*",{reply_markup:{keyboard:mainkey,resize_keyboard:true}})
     for (var i of uData){
-       ctx.copyMessage(i.user).catch(e => console.log(e))
+       bot.telegram.sendMessage(i.user,"*🔈 Broadcast By Admin*\n\n"+msg+"",{parse_mode:"Markdown",disable_web_page_preview:true}).catch(e => console.log(e))
     }
     ctx.scene.leave('broad')
 
