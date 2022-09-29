@@ -1,0 +1,5 @@
+module.exports = {
+    token: '5661682356:AAERxHY26HOQznRkIhH2qOkbSzVn7MQ8QQ0',
+    admins: [868578453],
+    curr:'Paisa'
+}
