@@ -347,7 +347,7 @@ bot.hears('📊 Statistics',async (ctx) =>{
             var final = payout[0].value
         }
         //
-        let text = "*📊Bot Live Status Here\n\n📤 Total Payouts: "+final.toFixed(3)+" "+curr+"\n\n🙇 Total Users: "+users.length+" Users\n\n✅ Made By* [Your name](https://t.me/your_id)"
+        let text = "*📊Bot Live Status Here\n\n📤 Total Payouts: "+final.toFixed(3)+" "+curr+"\n\n🙇 Total Users: "+users.length+" Users\n\n✅ Made By* [Mr AmitXD](https://t.me/your_id)"
         ctx.replyWithMarkdown(text)
     }catch(e){
         senderr(e)
