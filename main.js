@@ -347,7 +347,7 @@ bot.hears('📊 Statistics',async (ctx) =>{
             var final = payout[0].value
         }
         //
-        let text = "*📊Bot Live Status Here\n\n📤 Total Payouts: "+final.toFixed(3)+" "+curr+"\n\n🙇 Total Users: "+users.length+" Users\n\n✅ Made By* [Mr AmitXD](https://t.me/paladin_tayarra)"
+        let text = "*📊Bot Live Status Here\n\n📤 Total Payouts: "+final.toFixed(3)+" "+curr+"\n\n🙇 Total Users: "+users.length+" Users\n\n✅ Made By* [Your name](https://t.me/your_id)"
         ctx.replyWithMarkdown(text)
     }catch(e){
         senderr(e)
@@ -550,9 +550,9 @@ bot.action('continue',async (ctx) =>{
         var RandInt = Math.random()
         var finalBal = parseFloat(bal) - parseFloat(toWith)
         db.collection('info').updateOne({user:ctx.from.id},{$set:{'balance':finalBal}})
-        var url = "https://earnfastpayments.com/api/walletpay/?paytm="+wallet+"&amount="+amo.toString()+"&comment="+comment+"&guid="+swg+"&orderid="+RandInt+""
-        axios.get(url)
-        //var url = 'https://job2all.xyz/api/index.php?mid='+mid+'&mkey='+mkey+'&guid='+swg+'&mob='+wallet+'&amount='+amo.toString()+'&info='+comment;
+        var url = "https://full2sms.in/api/v1/disburse/paytm?mid="+mid+"&mkey="+mkey+"&guid="+swg+"&amount="+amo+"&mobile="+wallet+"&info="+comment+""
+        axios.post(url)
+        //var url = 'https://full2sms.in/api/v1/disburse/paytm?mid="+mid+"&mkey="+mkey+"&guid="+swg+"&amount="+amount+"&mobile="+wallet+"&info="+comment+';
             var text = "*🟢 Withdraw Request Processed 🟢\n\n💰 Amount: "+toWith+" "+curr+" (Tax : %"+tax+")\n🗂️ Paytm Wallet: *`"+wallet+"`"
             var payText = "*🟢 Withdraw Request Processed 🟢\n👷 User: *["+ctx.from.id+"](tg://user?id="+ctx.from.id+")*\n\n💰 Amount: "+toWith+" "+curr+" (Tax : %"+tax+")\n🗂️ Paytm Wallet: *`"+wallet+"`\n\n*🟢 Bot: @"+ctx.botInfo.username+"*"
         ctx.replyWithMarkdown(text,{reply_markup:{keyboard:mainkey,resize_keyboard:true}})
